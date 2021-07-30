@@ -15,6 +15,8 @@ package distsql
 
 import (
 	"context"
+	"github.com/pingcap/tidb/util/logutil"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -37,6 +39,24 @@ import (
 	"github.com/tikv/client-go/v2/tikv"
 	"github.com/tikv/client-go/v2/tikvrpc"
 )
+
+var _ = Suite(&testSuite{})
+
+func TestT(t *testing.T) {
+	CustomVerboseFlag = true
+	logLevel := os.Getenv("log_level")
+	err := logutil.InitLogger(logutil.NewLogConfig(logLevel, logutil.DefaultLogFormat, "", logutil.EmptyFileLogConfig, false))
+	if err != nil {
+		t.Fatal(err)
+	}
+	TestingT(t)
+}
+
+var _ = Suite(&testSuite{})
+
+type testSuite struct {
+	sctx sessionctx.Context
+}
 
 func (s *testSuite) createSelectNormal(batch, totalRows int, c *C, planIDs []int) (*selectResult, []*types.FieldType) {
 	request, err := (&RequestBuilder{}).SetKeyRanges(nil).
@@ -504,7 +524,6 @@ func BenchmarkSelectResponseChunk_BigResponse(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		s := &testSuite{}
-		s.SetUpSuite(nil)
 		s.sctx.GetSessionVars().InitChunkSize = 32
 		s.sctx.GetSessionVars().MaxChunkSize = 1024
 		selectResult, colTypes := createSelectNormal(4000, 20000, s.sctx)
@@ -520,7 +539,6 @@ func BenchmarkSelectResponseChunk_BigResponse(b *testing.B) {
 			}
 			chk.Reset()
 		}
-		s.TearDownSuite(nil)
 	}
 }
 
@@ -528,7 +546,6 @@ func BenchmarkSelectResponseChunk_SmallResponse(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		s := &testSuite{}
-		s.SetUpSuite(nil)
 		s.sctx.GetSessionVars().InitChunkSize = 32
 		s.sctx.GetSessionVars().MaxChunkSize = 1024
 		selectResult, colTypes := createSelectNormal(32, 3200, s.sctx)
@@ -544,6 +561,5 @@ func BenchmarkSelectResponseChunk_SmallResponse(b *testing.B) {
 			}
 			chk.Reset()
 		}
-		s.TearDownSuite(nil)
 	}
 }
