@@ -37,6 +37,7 @@ type handleRange struct {
 }
 
 func TestTableHandlesToKVRanges(t *testing.T) {
+	t.Parallel()
 	handles := []kv.Handle{kv.IntHandle(0), kv.IntHandle(2), kv.IntHandle(3), kv.IntHandle(4), kv.IntHandle(5),
 		kv.IntHandle(10), kv.IntHandle(11), kv.IntHandle(100), kv.IntHandle(9223372036854775806), kv.IntHandle(9223372036854775807)}
 
@@ -58,6 +59,7 @@ func TestTableHandlesToKVRanges(t *testing.T) {
 }
 
 func TestTableRangesToKVRanges(t *testing.T) {
+	t.Parallel()
 	ranges := []*ranger.Range{
 		{
 			LowVal:  []types.Datum{types.NewIntDatum(1)},
@@ -113,6 +115,7 @@ func TestTableRangesToKVRanges(t *testing.T) {
 }
 
 func TestIndexRangesToKVRanges(t *testing.T) {
+	t.Parallel()
 	ranges := []*ranger.Range{
 		{
 			LowVal:  []types.Datum{types.NewIntDatum(1)},
@@ -504,6 +507,7 @@ func TestRequestBuilderWithSetFromSessionVars_Concurrency(t *testing.T) {
 	} {
 		//todo name???
 		t.Run("", func(t *testing.T) {
+			t.Parallel()
 			vars := variable.NewSessionVars()
 			vars.SetReplicaRead(replicaRead)
 
