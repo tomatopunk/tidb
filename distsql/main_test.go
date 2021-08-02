@@ -7,7 +7,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	//testbridge.WorkaroundGoCheckFlags()
 	testbridge.WorkaroundGoCheckFlags()
 	opts := []goleak.Option{
 		goleak.IgnoreTopFunction("go.etcd.io/etcd/pkg/logutil.(*MergeLogger).outputLoop"),
